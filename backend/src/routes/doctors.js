@@ -26,15 +26,16 @@ const upload = multer({
 
 const router = Router();
 
+// Literal routes first so /profile is not matched by /:id/...
+router.get('/profile', authenticateToken, authorizeRoles('doctor'), doctorsController.getProfile);
+router.put('/profile', authenticateToken, authorizeRoles('doctor'), doctorsController.updateProfile);
+router.post('/upload-image', authenticateToken, authorizeRoles('doctor'), upload.single('profileImage'), doctorsController.uploadImage);
+
 router.get('/', doctorsController.list);
+router.get('/:id/available-slots', doctorsController.getAvailableSlots);
 router.get('/:id/ratings', doctorsController.getRatings);
 
-router.use(authenticateToken);
-
-router.get('/profile', authorizeRoles('doctor'), doctorsController.getProfile);
-router.put('/profile', authorizeRoles('doctor'), doctorsController.updateProfile);
-router.post('/upload-image', authorizeRoles('doctor'), upload.single('profileImage'), doctorsController.uploadImage);
-router.get('/:id/dashboard/stats', authorizeRoles('doctor'), doctorsController.getDashboardStats);
-router.get('/:id/appointments', authorizeRoles('doctor'), doctorsController.getAppointments);
+router.get('/:id/dashboard/stats', authenticateToken, authorizeRoles('doctor'), doctorsController.getDashboardStats);
+router.get('/:id/appointments', authenticateToken, authorizeRoles('doctor'), doctorsController.getAppointments);
 
 export default router;

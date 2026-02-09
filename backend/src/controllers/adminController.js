@@ -1,13 +1,14 @@
 import db from '../models/index.js';
 
-const { User, Doctor, Patient } = db;
+const { User, Doctor, Patient, Appointment } = db;
 
 export async function getStats(req, res) {
   try {
-    const [userCount, doctorCount, patientCount] = await Promise.all([
+    const [userCount, doctorCount, patientCount, appointmentCount] = await Promise.all([
       User.count(),
       Doctor.count(),
       Patient.count(),
+      Appointment.count(),
     ]);
     return res.json({
       success: true,
@@ -16,7 +17,7 @@ export async function getStats(req, res) {
           totalUsers: userCount,
           totalDoctors: doctorCount,
           totalPatients: patientCount,
-          totalAppointments: 0,
+          totalAppointments: appointmentCount,
         },
       },
     });

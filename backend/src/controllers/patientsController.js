@@ -1,6 +1,7 @@
 import db from '../models/index.js';
+import { Op } from 'sequelize';
 
-const { User, Patient } = db;
+const { User, Patient, Appointment, Doctor } = db;
 
 export async function getProfile(req, res) {
   try {
@@ -86,20 +87,29 @@ export async function updateProfile(req, res) {
 
 export async function getDashboardStats(req, res) {
   try {
-    const patientId = req.params.id;
+    const patientId = parseInt(req.params.id, 10);
     const user = req.user;
-    if (user.role !== 'patient' || user.patientId !== parseInt(patientId, 10)) {
+    if (user.role !== 'patient' || user.patientId !== patientId) {
       return res.status(403).json({ success: false, message: 'Unauthorized' });
     }
+    const today = new Date().toISOString().slice(0, 10);
+    const [totalAppointments, todayAppointments, completedAppointments, pendingAppointments, requestedAppointments, scheduledAppointments] = await Promise.all([
+      Appointment.count({ where: { patientId } }),
+      Appointment.count({ where: { patientId, appointmentDate: today, status: { [Op.notIn]: ['cancelled', 'rejected'] } } }),
+      Appointment.count({ where: { patientId, status: 'completed' } }),
+      Appointment.count({ where: { patientId, status: 'approved' } }),
+      Appointment.count({ where: { patientId, status: 'requested' } }),
+      Appointment.count({ where: { patientId, status: ['approved', 'in_progress'] } }),
+    ]);
     return res.json({
       success: true,
       data: {
-        totalAppointments: 0,
-        todayAppointments: 0,
-        completedAppointments: 0,
-        pendingAppointments: 0,
-        requestedAppointments: 0,
-        scheduledAppointments: 0,
+        totalAppointments,
+        todayAppointments,
+        completedAppointments,
+        pendingAppointments,
+        requestedAppointments,
+        scheduledAppointments,
       },
     });
   } catch (err) {
@@ -110,16 +120,42 @@ export async function getDashboardStats(req, res) {
 
 export async function getAppointments(req, res) {
   try {
-    const patientId = req.params.id;
+    const patientId = parseInt(req.params.id, 10);
     const user = req.user;
-    if (user.role !== 'patient' || user.patientId !== parseInt(patientId, 10)) {
+    if (user.role !== 'patient' || user.patientId !== patientId) {
       return res.status(403).json({ success: false, message: 'Unauthorized' });
     }
     const { limit = 10, sortBy = 'appointmentDate', sortOrder = 'DESC' } = req.query;
+    const limitNum = Math.min(parseInt(limit, 10) || 10, 100);
+    const { Doctor } = db;
+    const { rows, count } = await Appointment.findAndCountAll({
+      where: { patientId },
+      limit: limitNum,
+      order: [[sortBy || 'appointmentDate', (sortOrder || 'DESC').toUpperCase()]],
+      include: [
+        { model: Doctor, as: 'Doctor', include: [{ model: User, as: 'User', attributes: { exclude: ['password'] } }] },
+      ],
+    });
+    const list = rows.map((a) => {
+      const d = a.get({ plain: true });
+      return {
+        id: d.id,
+        patientId: d.patientId,
+        doctorId: d.doctorId,
+        appointmentDate: d.appointmentDate,
+        timeBlock: d.timeBlock,
+        type: d.type,
+        reason: d.reason,
+        symptoms: d.symptoms,
+        status: d.status,
+        createdAt: d.createdAt,
+        doctor: d.Doctor ? { id: d.Doctor.id, user: d.Doctor.User } : null,
+      };
+    });
     return res.json({
       success: true,
-      data: { appointments: [] },
-      pagination: { page: 1, limit: parseInt(limit, 10), total: 0 },
+      data: { appointments: list },
+      pagination: { page: 1, limit: limitNum, total: count },
     });
   } catch (err) {
     console.error('Get patient appointments error:', err);

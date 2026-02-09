@@ -5,6 +5,7 @@ const patientNav = [
   { to: '/app/dashboard', label: 'Dashboard' },
   { to: '/app/profile', label: 'Profile' },
   { to: '/app/appointments', label: 'Appointments' },
+  { to: '/app/doctors', label: 'Find doctors' },
 ];
 
 const doctorNav = [

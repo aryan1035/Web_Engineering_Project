@@ -2,6 +2,8 @@
 
 This document describes the whole project as an implementation plan: route, file, access, purpose, UI blocks, API dependencies, and implementation notes for each page. Use it to build the app from scratch or to port/rebrand it.
 
+**Out of scope (not implemented):** All lab-report and lab-test features — patient Lab Reports (§4.5), Admin Lab Reports (§6.5), Admin Lab Tests (§6.6), and any backend `lab-tests`/orders/reports APIs. Medical Records, Patients (doctor), and Admin Ratings remain in scope when their phases are implemented.
+
 ---
 
 ## 1. Overview

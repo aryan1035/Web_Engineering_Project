@@ -1,6 +1,6 @@
 # CureNet
 
-Full-stack healthcare web app (Phase 1: Auth, Login, Register, ProtectedRoute, Layout).
+Full-stack healthcare web app (Phases 1–4: Auth, public flows, dashboards, profiles, appointments).
 
 ## Prerequisites
 
@@ -12,22 +12,27 @@ Full-stack healthcare web app (Phase 1: Auth, Login, Register, ProtectedRoute, L
 ```bash
 cd backend
 cp .env.example .env
-# Edit .env: set DB_NAME, DB_USER, DB_PASSWORD, JWT_SECRET
+# Edit .env: DB_NAME, DB_USER, DB_PASSWORD, JWT_SECRET (and optional DB_HOST, DB_PORT, CORS_ORIGIN)
 npm install
 npm run dev
 ```
 
-API runs at `http://localhost:5000`. Health: `GET http://localhost:5000/api/health`.
+- **API:** `http://localhost:5000` · Health: `GET /api/health`
+- **Migrations:** Schema is applied automatically on startup. To run migrations only (e.g. in CI): `npm run migrate`. Migration files: `src/migrations/*.mjs` (add new ones with a timestamp prefix and `up`/`down` exports).
 
-Auth endpoints (base `/api/auth`):
+**Auth** (`/api/auth`): `POST /register`, `POST /login`, `GET`/`PUT /profile`, `POST /forgot-password`, `GET /verify-reset-token?token=...`, `POST /reset-password`.
 
-- `POST /register` – register (body: email, password, firstName, lastName, role, …)
-- `POST /login` – login (body: email or phone, password)
-- `GET /profile` – get profile (Bearer token)
-- `PUT /profile` – update profile (Bearer token)
-- `POST /forgot-password` – body: { email }
-- `GET /verify-reset-token?token=...`
-- `POST /reset-password` – body: { token, password }
+**Patients** (`/api/patients`): `GET`/`PUT /profile`, `GET /:id/dashboard/stats`, `GET /:id/appointments`.
+
+**Doctors** (`/api/doctors`): `GET` (list, optional `?department=`), `GET`/`PUT /profile`, `POST /upload-image` (multer, 5MB, under `uploads/`), `GET /:id/dashboard/stats`, `GET /:id/appointments`, `GET /:id/available-slots?date=YYYY-MM-DD`. Profile image URL: `/uploads/...`.
+
+**Appointments** (`/api/appointments`): `POST /` (patient create), `GET /` (patient list), `GET /:id`, `PUT /:id/cancel`, `PUT /:id/approve`, `PUT /:id/reject`, `PUT /:id/start`, `PUT /:id/complete`.
+
+**Prescriptions** (`/api/prescriptions`): `GET /appointment/:id`, `POST /` (doctor).
+
+**Ratings** (`/api/ratings`): `GET /doctor/:id`, `GET /my-ratings`, `POST /` (patient).
+
+**Admin** (`/api/admin`): `GET /stats`, `GET /analytics/appointments`, `GET /doctor-verifications` (and verify/unverify as needed).
 
 ## Frontend
 
@@ -41,10 +46,19 @@ npm run dev
 
 App runs at `http://localhost:5173`.
 
-- **Public:** `/` (landing), `/login`, `/register`
-- **Protected:** `/app` (redirects by role to dashboard), `/app/dashboard`, `/app/doctor-dashboard`, `/app/admin-dashboard`, etc. (placeholder content until later phases)
+- **Public:** `/` (landing), `/login`, `/register`, `/forgot-password`, `/reset-password?token=...`. Catch-all 404 with link to home/login.
+- **Protected (role-based):** `/app` → role redirect; `/app/dashboard` (patient), `/app/doctor-dashboard` (doctor), `/app/admin-dashboard` (admin); `/app/profile` (patient), `/app/doctor-profile` (doctor); `/app/appointments` (patient), `/app/doctors` (patient), `/app/doctor-appointments` (doctor). Dashboards use real stats and appointments; profiles use GET/PUT profile and doctor image upload.
 
-## Phase 1 implemented
+## Implemented phases
 
-- Backend: Express, Sequelize (User, Doctor, Patient, PasswordResetToken), JWT auth, auth routes
-- Frontend: AuthContext (login, register, logout, axios base URL + Bearer), Login, Register, ProtectedRoute, Layout, RoleBasedRedirect, Landing, placeholders for app routes
+**Phase 1 – Auth & layout**  
+Backend: Express, Sequelize (User, Doctor, Patient, PasswordResetToken), Umzug migrations, JWT auth, auth routes. Frontend: AuthContext, Login, Register, ProtectedRoute, Layout, RoleBasedRedirect, Landing.
+
+**Phase 2 – Public flow**  
+Forgot password (`/forgot-password` → `POST /auth/forgot-password`, success + link to sign in). Reset password (`/reset-password?token=...` → verify token, form → `POST /auth/reset-password`, redirect to login). NotFound (404) catch-all. Landing optional enhancements.
+
+**Phase 3 – Dashboards & profiles**  
+Backend: Patient GET/PUT profile, dashboard stats & appointments; Doctor GET/PUT profile, upload-image, stats, appointments, ratings; Admin stats, analytics/appointments, doctor-verifications. Static `/uploads` for images. Frontend: Patient dashboard (welcome, stat cards, recent appointments, quick actions); Doctor dashboard (welcome + rating, stat cards, pending-requests banner, today’s schedule, quick actions); Admin dashboard (stat cards, doctors list, links). Patient profile: personal + medical (GET/PUT auth + patients profile). Doctor profile: image upload, basic info, chamber times (explicit slots per day, 30-min 08:00–18:00). Shared: `utils/timeSlots` (CHAMBER_TIME_SLOTS, WEEKDAYS, emptyChamberTimes, normalizeChamberTimes).
+
+**Phase 4 – Appointments & prescriptions**  
+Backend: Appointment, Prescription, Rating models and migration; appointments CRUD and actions (create, list, approve, reject, start, complete, cancel); doctor available-slots; prescriptions (get by appointment, create); ratings (by doctor, my-ratings, create). Frontend: Doctors page (patient list with ratings, book appointment → `/app/appointments?book=:id`); Appointments page (patient list, book modal with date/slots/type/reason, cancel, view prescription, rate); DoctorAppointments page (doctor list with date/status filters, approve/reject/start/complete, add/view prescription). PrescriptionView and RatingModal components. 

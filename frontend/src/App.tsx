@@ -20,6 +20,9 @@ import DoctorDashboard from './pages/DoctorDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import PatientProfile from './pages/PatientProfile';
 import DoctorProfile from './pages/DoctorProfile';
+import Appointments from './pages/Appointments';
+import DoctorAppointments from './pages/DoctorAppointments';
+import Doctors from './pages/Doctors';
 import AppPlaceholder from './pages/AppPlaceholder';
 
 const queryClient = new QueryClient();
@@ -54,9 +57,9 @@ export default function App() {
               <Route path="admin-dashboard" element={<AdminDashboard />} />
               <Route path="profile" element={<ProtectedRoute requiredRole="patient"><PatientProfile /></ProtectedRoute>} />
               <Route path="doctor-profile" element={<ProtectedRoute requiredRole="doctor"><DoctorProfile /></ProtectedRoute>} />
-              <Route path="appointments" element={<AppPlaceholder />} />
-              <Route path="doctor-appointments" element={<AppPlaceholder />} />
-              <Route path="doctors" element={<AppPlaceholder />} />
+              <Route path="appointments" element={<ProtectedRoute requiredRole="patient"><Appointments /></ProtectedRoute>} />
+              <Route path="doctor-appointments" element={<ProtectedRoute requiredRole="doctor"><DoctorAppointments /></ProtectedRoute>} />
+              <Route path="doctors" element={<ProtectedRoute requiredRole="patient"><Doctors /></ProtectedRoute>} />
               <Route path="patients" element={<AppPlaceholder />} />
               <Route path="users" element={<AppPlaceholder />} />
               <Route path="admin-doctors" element={<AppPlaceholder />} />

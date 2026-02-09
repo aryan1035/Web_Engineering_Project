@@ -5,12 +5,15 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import sequelize from './config/database.js';
+import { runMigrations } from './migrate.js';
 import db from './models/index.js';
 import authRoutes from './routes/auth.js';
 import patientsRoutes from './routes/patients.js';
 import doctorsRoutes from './routes/doctors.js';
 import adminRoutes from './routes/admin.js';
 import ratingsRoutes from './routes/ratings.js';
+import appointmentsRoutes from './routes/appointments.js';
+import prescriptionsRoutes from './routes/prescriptions.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -31,6 +34,8 @@ app.use('/api/patients', patientsRoutes);
 app.use('/api/doctors', doctorsRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/ratings', ratingsRoutes);
+app.use('/api/appointments', appointmentsRoutes);
+app.use('/api/prescriptions', prescriptionsRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ success: true, message: 'CureNet API' });
@@ -39,8 +44,8 @@ app.get('/api/health', (req, res) => {
 async function start() {
   try {
     await sequelize.authenticate();
-    await sequelize.sync({ alter: true });
-    console.log('Database connected and synced.');
+    await runMigrations();
+    console.log('Database connected and migrations up to date.');
   } catch (err) {
     console.error('Database connection failed:', err.message);
     process.exit(1);

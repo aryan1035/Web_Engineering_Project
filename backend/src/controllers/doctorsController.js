@@ -1,9 +1,16 @@
 import db from '../models/index.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { Op } from 'sequelize';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const { User, Doctor } = db;
+const { User, Doctor, Appointment, Rating } = db;
+
+const WEEKDAY_NAMES = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+function getWeekday(dateStr) {
+  const d = new Date(dateStr + 'T12:00:00');
+  return WEEKDAY_NAMES[d.getDay()];
+}
 
 function formatDoctorResponse(doctor, user) {
   const u = user ? (user.toJSON ? user.toJSON() : user) : {};
@@ -108,22 +115,32 @@ export async function uploadImage(req, res) {
 
 export async function getDashboardStats(req, res) {
   try {
-    const doctorId = req.params.id;
+    const doctorId = parseInt(req.params.id, 10);
     const user = req.user;
-    if (user.role !== 'doctor' || user.doctorId !== parseInt(doctorId, 10)) {
+    if (user.role !== 'doctor' || user.doctorId !== doctorId) {
       return res.status(403).json({ success: false, message: 'Unauthorized' });
     }
+    const today = new Date().toISOString().slice(0, 10);
+    const [totalAppointments, todayAppointments, completedAppointments, pendingAppointments, requestedAppointments, inProgressAppointments, totalPatients] = await Promise.all([
+      Appointment.count({ where: { doctorId } }),
+      Appointment.count({ where: { doctorId, appointmentDate: today, status: { [Op.notIn]: ['cancelled', 'rejected'] } } }),
+      Appointment.count({ where: { doctorId, status: 'completed' } }),
+      Appointment.count({ where: { doctorId, status: 'approved' } }),
+      Appointment.count({ where: { doctorId, status: 'requested' } }),
+      Appointment.count({ where: { doctorId, status: 'in_progress' } }),
+      Appointment.count({ where: { doctorId }, distinct: true, col: 'patientId' }),
+    ]);
     return res.json({
       success: true,
       data: {
         stats: {
-          totalAppointments: 0,
-          todayAppointments: 0,
-          completedAppointments: 0,
-          pendingAppointments: 0,
-          requestedAppointments: 0,
-          inProgressAppointments: 0,
-          totalPatients: 0,
+          totalAppointments,
+          todayAppointments,
+          completedAppointments,
+          pendingAppointments,
+          requestedAppointments,
+          inProgressAppointments,
+          totalPatients,
         },
       },
     });
@@ -135,16 +152,47 @@ export async function getDashboardStats(req, res) {
 
 export async function getAppointments(req, res) {
   try {
-    const doctorId = req.params.id;
+    const doctorId = parseInt(req.params.id, 10);
     const user = req.user;
-    if (user.role !== 'doctor' || user.doctorId !== parseInt(doctorId, 10)) {
+    if (user.role !== 'doctor' || user.doctorId !== doctorId) {
       return res.status(403).json({ success: false, message: 'Unauthorized' });
     }
-    const { date } = req.query;
+    const { date, status, limit = 20, page = 1 } = req.query;
+    const where = { doctorId };
+    if (date) where.appointmentDate = date;
+    if (status) where.status = status;
+    const limitNum = Math.min(parseInt(limit, 10) || 20, 100);
+    const offset = (Math.max(1, parseInt(page, 10)) - 1) * limitNum;
+    const { Patient } = db;
+    const { rows, count } = await Appointment.findAndCountAll({
+      where,
+      limit: limitNum,
+      offset,
+      order: [['appointment_date', 'ASC'], ['time_block', 'ASC']],
+      include: [
+        { model: Patient, as: 'Patient', include: [{ model: User, as: 'User', attributes: { exclude: ['password'] } }] },
+      ],
+    });
+    const list = rows.map((a) => {
+      const d = a.get({ plain: true });
+      return {
+        id: d.id,
+        patientId: d.patientId,
+        doctorId: d.doctorId,
+        appointmentDate: d.appointmentDate,
+        timeBlock: d.timeBlock,
+        type: d.type,
+        reason: d.reason,
+        symptoms: d.symptoms,
+        status: d.status,
+        createdAt: d.createdAt,
+        patient: d.Patient ? { id: d.Patient.id, user: d.Patient.User } : null,
+      };
+    });
     return res.json({
       success: true,
-      data: { appointments: [] },
-      pagination: { page: 1, limit: 20, total: 0 },
+      data: { appointments: list },
+      pagination: { page: parseInt(page, 10), limit: limitNum, total: count },
     });
   } catch (err) {
     console.error('Get doctor appointments error:', err);
@@ -152,14 +200,52 @@ export async function getAppointments(req, res) {
   }
 }
 
+export async function getAvailableSlots(req, res) {
+  try {
+    const doctorId = parseInt(req.params.id, 10);
+    const { date } = req.query;
+    if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return res.status(400).json({ success: false, message: 'Valid date (YYYY-MM-DD) required' });
+    }
+    const doctor = await Doctor.findByPk(doctorId);
+    if (!doctor) {
+      return res.status(404).json({ success: false, message: 'Doctor not found' });
+    }
+    const chamberTimes = doctor.chamberTimes || {};
+    const weekday = getWeekday(date);
+    const daySlots = Array.isArray(chamberTimes[weekday]) ? chamberTimes[weekday] : [];
+    const booked = await Appointment.findAll({
+      where: {
+        doctorId,
+        appointmentDate: date,
+        status: { [Op.notIn]: ['cancelled', 'rejected'] },
+      },
+      attributes: ['timeBlock'],
+    });
+    const bookedSet = new Set(booked.map((a) => a.timeBlock));
+    const slots = daySlots.filter((t) => !bookedSet.has(t));
+    return res.json({ success: true, data: { slots } });
+  } catch (err) {
+    console.error('Get available slots error:', err);
+    return res.status(500).json({ success: false, message: err.message || 'Failed' });
+  }
+}
+
 export async function getRatings(req, res) {
   try {
     const doctorId = req.params.id;
+    const ratings = await Rating.findAll({
+      where: { doctorId },
+      attributes: ['id', 'rating', 'review', 'createdAt'],
+    });
+    const total = ratings.length;
+    const sum = ratings.reduce((s, r) => s + r.rating, 0);
+    const averageRating = total ? Math.round((sum / total) * 10) / 10 : 0;
     return res.json({
       success: true,
       data: {
-        summary: { averageRating: 0, totalRatings: 0 },
-        ratings: [],
+        summary: { averageRating, totalRatings: total },
+        ratings: ratings.map((r) => r.get({ plain: true })),
       },
     });
   } catch (err) {
