@@ -1,0 +1,51 @@
+import jwt from 'jsonwebtoken';
+import db from '../models/index.js';
+
+const { User, Doctor, Patient } = db;
+
+export const authenticateToken = async (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ success: false, message: 'Access token required' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
+    const user = await User.findByPk(decoded.userId, {
+      attributes: { exclude: ['password'] },
+      include: [
+        { model: Doctor, as: 'Doctor', required: false },
+        { model: Patient, as: 'Patient', required: false },
+      ],
+    });
+
+    if (!user) {
+      return res.status(401).json({ success: false, message: 'User not found' });
+    }
+    if (!user.isActive) {
+      return res.status(403).json({ success: false, message: 'Account is deactivated' });
+    }
+
+    req.user = user;
+    next();
+  } catch (err) {
+    if (err.name === 'TokenExpiredError') {
+      return res.status(401).json({ success: false, message: 'Token expired' });
+    }
+    return res.status(403).json({ success: false, message: 'Invalid token' });
+  }
+};
+
+export const authorizeRoles = (...roles) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: 'Not authenticated' });
+    }
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({ success: false, message: 'Not authorized for this role' });
+    }
+    next();
+  };
+};

@@ -1,0 +1,251 @@
+import jwt from 'jsonwebtoken';
+import db from '../models/index.js';
+import PasswordResetToken from '../models/PasswordResetToken.js';
+
+const { User, Doctor, Patient } = db;
+
+const JWT_SECRET = process.env.JWT_SECRET || 'secret';
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
+
+function signToken(userId) {
+  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+}
+
+function formatUserResponse(user) {
+  const u = user.toJSON ? user.toJSON() : user;
+  const { Doctor: doctor, Patient: patient, ...rest } = u;
+  const payload = { ...rest };
+  if (doctor) payload.doctorId = doctor.id;
+  if (patient) payload.patientId = patient.id;
+  return payload;
+}
+
+export async function register(req, res) {
+  try {
+    const {
+      email,
+      password,
+      firstName,
+      lastName,
+      phone,
+      dateOfBirth,
+      gender,
+      address,
+      role = 'patient',
+      bmdcRegistrationNumber,
+      department,
+      experience,
+    } = req.body;
+
+    if (!email || !password || !firstName || !lastName) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email, password, first name and last name are required',
+      });
+    }
+
+    const existing = await User.findOne({ where: { email } });
+    if (existing) {
+      return res.status(400).json({ success: false, message: 'Email already registered' });
+    }
+
+    const user = await User.create({
+      email,
+      password,
+      firstName,
+      lastName,
+      phone: phone || null,
+      dateOfBirth: dateOfBirth || null,
+      gender: gender || null,
+      address: address || null,
+      role: ['patient', 'doctor', 'admin'].includes(role) ? role : 'patient',
+    });
+
+    if (user.role === 'doctor') {
+      await Doctor.create({
+        userId: user.id,
+        bmdcRegistrationNumber: bmdcRegistrationNumber || null,
+        department: department || null,
+        experience: experience != null ? parseInt(experience, 10) : null,
+      });
+    }
+    if (user.role === 'patient') {
+      await Patient.create({ userId: user.id });
+    }
+
+    const token = signToken(user.id);
+    const fullUser = await User.findByPk(user.id, {
+      attributes: { exclude: ['password'] },
+      include: [
+        { model: Doctor, as: 'Doctor', required: false },
+        { model: Patient, as: 'Patient', required: false },
+      ],
+    });
+
+    return res.status(201).json({
+      success: true,
+      data: { user: formatUserResponse(fullUser), token },
+    });
+  } catch (err) {
+    console.error('Register error:', err);
+    return res.status(500).json({ success: false, message: err.message || 'Registration failed' });
+  }
+}
+
+export async function login(req, res) {
+  try {
+    const { email, phone, password } = req.body;
+    const loginKey = email || phone;
+    if (!loginKey || !password) {
+      return res.status(400).json({ success: false, message: 'Email or phone and password required' });
+    }
+
+    const where = email ? { email } : { phone };
+    const user = await User.findOne({
+      where,
+      include: [
+        { model: Doctor, as: 'Doctor', required: false },
+        { model: Patient, as: 'Patient', required: false },
+      ],
+    });
+
+    if (!user || !(await user.comparePassword(password))) {
+      return res.status(401).json({ success: false, message: 'Invalid email/phone or password' });
+    }
+    if (!user.isActive) {
+      return res.status(403).json({ success: false, message: 'Account is deactivated' });
+    }
+
+    const token = signToken(user.id);
+    return res.json({
+      success: true,
+      data: { user: formatUserResponse(user), token },
+    });
+  } catch (err) {
+    console.error('Login error:', err);
+    return res.status(500).json({ success: false, message: err.message || 'Login failed' });
+  }
+}
+
+export async function getProfile(req, res) {
+  try {
+    const user = req.user;
+    return res.json({
+      success: true,
+      data: { user: formatUserResponse(user) },
+    });
+  } catch (err) {
+    console.error('Get profile error:', err);
+    return res.status(500).json({ success: false, message: err.message || 'Failed to get profile' });
+  }
+}
+
+export async function updateProfile(req, res) {
+  try {
+    const { firstName, lastName, phone, dateOfBirth, gender, address } = req.body;
+    const user = req.user;
+
+    await user.update({
+      ...(firstName !== undefined && { firstName }),
+      ...(lastName !== undefined && { lastName }),
+      ...(phone !== undefined && { phone }),
+      ...(dateOfBirth !== undefined && { dateOfBirth }),
+      ...(gender !== undefined && { gender }),
+      ...(address !== undefined && { address }),
+    });
+
+    const updated = await User.findByPk(user.id, {
+      attributes: { exclude: ['password'] },
+      include: [
+        { model: Doctor, as: 'Doctor', required: false },
+        { model: Patient, as: 'Patient', required: false },
+      ],
+    });
+
+    return res.json({
+      success: true,
+      data: { user: formatUserResponse(updated) },
+    });
+  } catch (err) {
+    console.error('Update profile error:', err);
+    return res.status(500).json({ success: false, message: err.message || 'Update failed' });
+  }
+}
+
+export async function forgotPassword(req, res) {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ success: false, message: 'Email is required' });
+    }
+
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      return res.json({ success: true, message: 'If that email exists, we sent a reset link' });
+    }
+
+    const token = PasswordResetToken.generateToken();
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+    await PasswordResetToken.destroy({ where: { userId: user.id } });
+    await PasswordResetToken.create({ userId: user.id, token, expiresAt });
+
+    // TODO: send email with reset link (e.g. FRONTEND_URL/reset-password?token=...)
+    // For Phase 1 we just return success; frontend can show "check your email"
+    return res.json({
+      success: true,
+      message: 'If that email exists, we sent a reset link',
+      data: process.env.NODE_ENV === 'development' ? { token } : undefined,
+    });
+  } catch (err) {
+    console.error('Forgot password error:', err);
+    return res.status(500).json({ success: false, message: err.message || 'Request failed' });
+  }
+}
+
+export async function verifyResetToken(req, res) {
+  try {
+    const { token } = req.query;
+    if (!token) {
+      return res.status(400).json({ success: false, message: 'Token is required' });
+    }
+
+    const record = await PasswordResetToken.findOne({ where: { token } });
+
+    if (!record || record.expiresAt < new Date()) {
+      return res.status(400).json({ success: false, message: 'Invalid or expired token' });
+    }
+
+    return res.json({ success: true, message: 'Token is valid' });
+  } catch (err) {
+    console.error('Verify reset token error:', err);
+    return res.status(500).json({ success: false, message: err.message || 'Verification failed' });
+  }
+}
+
+export async function resetPassword(req, res) {
+  try {
+    const { token, password } = req.body;
+    if (!token || !password) {
+      return res.status(400).json({ success: false, message: 'Token and new password required' });
+    }
+
+    const record = await PasswordResetToken.findOne({ where: { token } });
+    if (!record || record.expiresAt < new Date()) {
+      return res.status(400).json({ success: false, message: 'Invalid or expired token' });
+    }
+
+    const user = await User.findByPk(record.userId);
+    if (!user) {
+      return res.status(400).json({ success: false, message: 'User not found' });
+    }
+
+    user.password = password;
+    await user.save();
+    await PasswordResetToken.destroy({ where: { id: record.id } });
+
+    return res.json({ success: true, message: 'Password reset successfully' });
+  } catch (err) {
+    console.error('Reset password error:', err);
+    return res.status(500).json({ success: false, message: err.message || 'Reset failed' });
+  }
+}
