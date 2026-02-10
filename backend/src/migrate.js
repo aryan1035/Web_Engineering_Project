@@ -6,12 +6,11 @@ import sequelize from './config/database.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Use glob + cwd so the pattern has no backslashes (path.join on Windows breaks glob)
-const migrationsDir = path.join(__dirname, 'migrations');
+const migrationsDir = path.join(__dirname, 'migrations').replace(/\\/g, '/');
 
 const umzug = new Umzug({
   migrations: {
-    glob: '*.mjs',
-    cwd: migrationsDir,
+    glob: path.join(migrationsDir, '*.mjs').replace(/\\/g, '/'),
   },
   context: sequelize.getQueryInterface(),
   storage: new SequelizeStorage({ sequelize }),

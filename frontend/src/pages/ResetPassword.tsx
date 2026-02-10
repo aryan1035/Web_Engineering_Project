@@ -85,7 +85,7 @@ export default function ResetPassword() {
             </p>
             <Link
               to="/forgot-password"
-              className="inline-block rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500"
+              className="inline-block rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-500"
             >
               Request new link
             </Link>
@@ -101,7 +101,7 @@ export default function ResetPassword() {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-gray-50">
       <div className="w-full max-w-md">
-        <Link to="/" className="text-sm text-indigo-600 hover:text-indigo-500 mb-6 inline-block">
+        <Link to="/" className="text-sm text-primary-600 hover:text-primary-500 mb-6 inline-block">
           ← Back to {APP_NAME}
         </Link>
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Set new password</h1>
@@ -117,7 +117,7 @@ export default function ResetPassword() {
                 id="password"
                 type={showPassword ? 'text' : 'password'}
                 autoComplete="new-password"
-                className="block w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                className="block w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 shadow-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
                 {...register('password', {
                   required: 'Password is required',
                   validate: (v) => validatePassword(v ?? ''),
@@ -144,7 +144,7 @@ export default function ResetPassword() {
               id="confirmPassword"
               type="password"
               autoComplete="new-password"
-              className="block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+              className="block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
               {...register('confirmPassword', {
                 required: 'Please confirm your password',
                 validate: (v) => v === password || 'Passwords do not match',
@@ -158,14 +158,14 @@ export default function ResetPassword() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 disabled:opacity-50"
+            className="w-full rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 disabled:opacity-50"
           >
             {loading ? 'Resetting...' : 'Reset password'}
           </button>
         </form>
 
         <p className="mt-6 text-center text-sm text-gray-600">
-          <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+          <Link to="/login" className="font-medium text-primary-600 hover:text-primary-500">
             Back to sign in
           </Link>
         </p>

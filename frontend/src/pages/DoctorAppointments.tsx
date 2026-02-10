@@ -132,7 +132,7 @@ export default function DoctorAppointments() {
                       type="button"
                       onClick={() => actionMutation.mutate({ id: apt.id, action: 'start' })}
                       disabled={actionMutation.isPending}
-                      className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-50"
+                      className="rounded-lg bg-primary-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-primary-500 disabled:opacity-50"
                     >
                       Start
                     </button>
@@ -280,7 +280,7 @@ function PrescriptionFormModal({ appointmentId, onClose }: PrescriptionFormModal
               <div>
                 <div className="flex justify-between items-center mb-1">
                   <label className="block text-sm font-medium text-gray-700">Medicines</label>
-                  <button type="button" onClick={addRow} className="text-sm text-indigo-600 hover:text-indigo-500">
+                  <button type="button" onClick={addRow} className="text-sm text-primary-600 hover:text-primary-500">
                     + Add
                   </button>
                 </div>
@@ -322,7 +322,7 @@ function PrescriptionFormModal({ appointmentId, onClose }: PrescriptionFormModal
                 <button type="button" onClick={onClose} className="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
                   Close
                 </button>
-                <button type="submit" disabled={createMutation.isPending} className="flex-1 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-50">
+                <button type="submit" disabled={createMutation.isPending} className="flex-1 rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-500 disabled:opacity-50">
                   {createMutation.isPending ? 'Saving...' : 'Save'}
                 </button>
               </div>

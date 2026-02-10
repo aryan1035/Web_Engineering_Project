@@ -47,14 +47,14 @@ export default function ForgotPassword() {
             </p>
             <Link
               to="/login"
-              className="inline-block rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500"
+              className="inline-block rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-500"
             >
               Back to sign in
             </Link>
             <button
               type="button"
               onClick={() => setSuccess(false)}
-              className="block w-full mt-4 text-sm text-indigo-600 hover:text-indigo-500"
+              className="block w-full mt-4 text-sm text-primary-600 hover:text-primary-500"
             >
               Try again with another email
             </button>
@@ -70,7 +70,7 @@ export default function ForgotPassword() {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-gray-50">
       <div className="w-full max-w-md">
-        <Link to="/" className="text-sm text-indigo-600 hover:text-indigo-500 mb-6 inline-block">
+        <Link to="/" className="text-sm text-primary-600 hover:text-primary-500 mb-6 inline-block">
           ← Back to {APP_NAME}
         </Link>
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Forgot password?</h1>
@@ -87,7 +87,7 @@ export default function ForgotPassword() {
               id="email"
               type="email"
               autoComplete="email"
-              className="block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+              className="block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
               {...register('email', {
                 required: 'Email is required',
                 pattern: {
@@ -104,7 +104,7 @@ export default function ForgotPassword() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 disabled:opacity-50"
+            className="w-full rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 disabled:opacity-50"
           >
             {loading ? 'Sending...' : 'Send reset link'}
           </button>
@@ -112,7 +112,7 @@ export default function ForgotPassword() {
 
         <p className="mt-6 text-center text-sm text-gray-600">
           Remember your password?{' '}
-          <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+          <Link to="/login" className="font-medium text-primary-600 hover:text-primary-500">
             Sign in
           </Link>
         </p>

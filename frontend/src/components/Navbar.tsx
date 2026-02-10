@@ -44,7 +44,7 @@ const Navbar = () => {
         {/* Desktop nav */}
         <div className="hidden md:flex gap-6 lg:gap-8 text-sm font-medium text-gray-600 items-center">
           {navLinks.map(({ to, label }) => (
-            <Link key={to} to={to} className="hover:text-blue-600 whitespace-nowrap">
+            <Link key={to} to={to} className="hover:text-primary-600 whitespace-nowrap">
               {label}
             </Link>
           ))}
@@ -56,11 +56,11 @@ const Navbar = () => {
             <>
               <Link
                 to={dashboardPath}
-                className="text-gray-800 font-bold hover:text-blue-600 truncate max-w-[120px] lg:max-w-none"
+                className="text-gray-800 font-bold hover:text-primary-600 truncate max-w-[120px] lg:max-w-none"
               >
                 {displayName}
               </Link>
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold border border-blue-200 shrink-0">
+              <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center text-primary-600 font-bold border border-primary-200 shrink-0">
                 {initial}
               </div>
               <button
@@ -72,12 +72,12 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              <Link to="/register" className="text-blue-600 font-medium hover:underline">
+              <Link to="/register" className="text-primary-600 font-medium hover:underline">
                 Sign up
               </Link>
               <Link
                 to="/login"
-                className="bg-blue-600 text-white px-4 lg:px-6 py-2 rounded-full font-medium hover:bg-blue-700"
+                className="bg-primary-600 text-white px-4 lg:px-6 py-2 rounded-full font-medium hover:bg-primary-700"
               >
                 Login
               </Link>
@@ -104,7 +104,7 @@ const Navbar = () => {
               <Link
                 key={to}
                 to={to}
-                className="text-sm font-medium text-gray-600 hover:text-blue-600 py-2"
+                className="text-sm font-medium text-gray-600 hover:text-primary-600 py-2"
                 onClick={closeMobileMenu}
               >
                 {label}
@@ -115,10 +115,10 @@ const Navbar = () => {
                 <>
                   <Link
                     to={dashboardPath}
-                    className="text-gray-800 font-bold hover:text-blue-600 py-2 flex items-center gap-2"
+                    className="text-gray-800 font-bold hover:text-primary-600 py-2 flex items-center gap-2"
                     onClick={closeMobileMenu}
                   >
-                    <span className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-sm">
+                    <span className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center text-primary-600 font-bold text-sm">
                       {initial}
                     </span>
                     {displayName}
@@ -134,14 +134,14 @@ const Navbar = () => {
                 <>
                   <Link
                     to="/register"
-                    className="text-blue-600 font-medium py-2"
+                    className="text-primary-600 font-medium py-2"
                     onClick={closeMobileMenu}
                   >
                     Sign up
                   </Link>
                   <Link
                     to="/login"
-                    className="bg-blue-600 text-white text-center py-2.5 px-4 rounded-full font-medium"
+                    className="bg-primary-600 text-white text-center py-2.5 px-4 rounded-full font-medium"
                     onClick={closeMobileMenu}
                   >
                     Login

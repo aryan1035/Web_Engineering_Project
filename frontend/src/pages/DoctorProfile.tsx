@@ -147,7 +147,7 @@ export default function DoctorProfile() {
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500"
+            className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-500"
           >
             Edit profile
           </button>
@@ -164,7 +164,7 @@ export default function DoctorProfile() {
               type="button"
               onClick={form.handleSubmit((d) => updateMutation.mutate({ ...d, chamberTimes }))}
               disabled={updateMutation.isPending}
-              className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-50"
+              className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-500 disabled:opacity-50"
             >
               Save
             </button>
@@ -319,15 +319,14 @@ export default function DoctorProfile() {
                         return (
                           <label
                             key={time}
-                            className={`inline-flex items-center rounded px-2 py-0.5 text-xs font-medium cursor-pointer ${
-                              editing
+                            className={`inline-flex items-center rounded px-2 py-0.5 text-xs font-medium cursor-pointer ${editing
                                 ? selected
-                                  ? 'bg-indigo-100 text-indigo-800'
+                                  ? 'bg-primary-100 text-primary-800'
                                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                 : selected
-                                  ? 'bg-indigo-50 text-indigo-700'
+                                  ? 'bg-primary-50 text-primary-700'
                                   : 'text-gray-400'
-                            }`}
+                              }`}
                           >
                             <input
                               type="checkbox"

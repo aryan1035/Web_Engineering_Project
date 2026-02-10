@@ -52,8 +52,8 @@ export default function AdminDashboard() {
             className="rounded-lg bg-white p-4 shadow-sm border border-gray-200"
           >
             <div className="flex items-center gap-3">
-              <div className="rounded-lg bg-indigo-100 p-2">
-                <Icon className="h-5 w-5 text-indigo-600" />
+              <div className="rounded-lg bg-primary-100 p-2">
+                <Icon className="h-5 w-5 text-primary-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-500">{label}</p>
@@ -69,7 +69,7 @@ export default function AdminDashboard() {
       <div className="rounded-lg bg-white shadow-sm border border-gray-200 overflow-hidden">
         <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
           <h3 className="font-semibold text-gray-900">Doctors</h3>
-          <Link to="/app/admin-doctors" className="text-sm text-indigo-600 hover:text-indigo-500">
+          <Link to="/app/admin-doctors" className="text-sm text-primary-600 hover:text-primary-500">
             View all
           </Link>
         </div>
@@ -92,7 +92,7 @@ export default function AdminDashboard() {
       <div className="flex flex-wrap gap-3">
         <Link
           to="/app/users"
-          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500"
+          className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-500"
         >
           Users
         </Link>

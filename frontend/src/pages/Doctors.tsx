@@ -59,7 +59,7 @@ export default function Doctors() {
           <select
             value={department}
             onChange={(e) => setDepartment(e.target.value)}
-            className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           >
             <option value="">All departments</option>
             {MEDICAL_DEPARTMENTS.map((d) => (
@@ -115,7 +115,7 @@ export default function Doctors() {
                 <div className="p-4 border-t border-gray-100 mt-auto">
                   <Link
                     to={`/app/appointments?book=${doc.id}`}
-                    className="block w-full text-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500"
+                    className="block w-full text-center rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-500"
                   >
                     Book appointment
                   </Link>

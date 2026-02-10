@@ -8,6 +8,7 @@ import type { RegisterData } from '../context/AuthContext';
 import { MEDICAL_DEPARTMENTS } from '../utils/departments';
 import { APP_NAME } from '../utils/constants';
 import { validatePassword } from '../utils/passwordValidation';
+import signupIllustration from '../assets/image.png'; // Import the illustration
 
 type Role = 'patient' | 'doctor';
 
@@ -49,53 +50,54 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex">
-      <div className="flex-1 flex items-center justify-center px-4 py-12 bg-gray-50 overflow-auto">
-        <div className="w-full max-w-md my-8">
-          <Link to="/" className="text-sm text-indigo-600 hover:text-indigo-500 mb-6 inline-block">
-            ← Back to Home
-          </Link>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Create your account</h1>
-          <p className="text-gray-600 mb-6">Join {APP_NAME} as a patient or doctor.</p>
-
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">I am a</label>
-            <div className="flex gap-4">
-              {(['patient', 'doctor'] as const).map((r) => (
-                <label key={r} className="flex items-center">
-                  <input
-                    type="radio"
-                    name="role"
-                    checked={role === r}
-                    onChange={() => setRole(r)}
-                    className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                  />
-                  <span className="ml-2 text-sm capitalize">{r}</span>
-                </label>
-              ))}
-            </div>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-5xl bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row">
+        {/* Left Side - Form */}
+        <div className="w-full md:w-1/2 p-8 sm:p-12 order-2 md:order-1">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h1>
+            <p className="text-gray-500">Please sign up to book appointment</p>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            {/* Role Selection */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">I am a</label>
+              <div className="flex gap-4">
+                {(['patient', 'doctor'] as const).map((r) => (
+                  <label key={r} className={`flex items-center px-4 py-2 border rounded-lg cursor-pointer transition-colors ${role === r ? 'border-primary-600 bg-primary-50 text-primary-700' : 'border-gray-200 hover:bg-gray-50'}`}>
+                    <input
+                      type="radio"
+                      name="role"
+                      checked={role === r}
+                      onChange={() => setRole(r)}
+                      className="sr-only"
+                    />
+                    <span className="text-sm font-medium capitalize">{r}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">First name</label>
                 <input
-                  className="block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                  className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 bg-gray-50 focus:bg-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors"
                   {...registerField('firstName', { required: 'Required' })}
                 />
                 {errors.firstName && (
-                  <p className="mt-1 text-sm text-red-600">{errors.firstName.message}</p>
+                  <p className="mt-1 text-xs text-red-600">{errors.firstName.message}</p>
                 )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Last name</label>
                 <input
-                  className="block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                  className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 bg-gray-50 focus:bg-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors"
                   {...registerField('lastName', { required: 'Required' })}
                 />
                 {errors.lastName && (
-                  <p className="mt-1 text-sm text-red-600">{errors.lastName.message}</p>
+                  <p className="mt-1 text-xs text-red-600">{errors.lastName.message}</p>
                 )}
               </div>
             </div>
@@ -105,59 +107,64 @@ export default function Register() {
               <input
                 type="email"
                 autoComplete="email"
-                className="block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 bg-gray-50 focus:bg-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors"
                 {...registerField('email', {
                   required: 'Email is required',
                   pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Invalid email' },
                 })}
               />
-              {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
+              {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>}
             </div>
 
-            <div className="relative">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                autoComplete="new-password"
-                className="block w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-                {...registerField('password', {
-                  required: 'Password is required',
-                  validate: (v) => validatePassword(v ?? ''),
-                })}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword((s) => !s)}
-                className="absolute right-2 top-8 text-gray-500 hover:text-gray-700"
-              >
-                {showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
-              </button>
-              {errors.password && (
-                <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
-              )}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="relative">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  autoComplete="new-password"
+                  className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 pr-10 text-gray-900 bg-gray-50 focus:bg-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors"
+                  {...registerField('password', {
+                    required: 'Password is required',
+                    validate: (v) => validatePassword(v ?? ''),
+                  })}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((s) => !s)}
+                  className="absolute right-3 top-[2.1rem] text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+                </button>
+                {errors.password && (
+                  <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Confirm password</label>
+                <input
+                  type="password"
+                  autoComplete="new-password"
+                  placeholder="Confirm your password"
+                  className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 bg-gray-50 focus:bg-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors"
+                  {...registerField('confirmPassword', {
+                    required: 'Please confirm password',
+                    validate: (v) => v === password || 'Passwords do not match',
+                  })}
+                />
+                {errors.confirmPassword && (
+                  <p className="mt-1 text-xs text-red-600">{errors.confirmPassword.message}</p>
+                )}
+              </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Confirm password</label>
-              <input
-                type="password"
-                autoComplete="new-password"
-                className="block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-                {...registerField('confirmPassword', {
-                  required: 'Please confirm password',
-                  validate: (v) => v === password || 'Passwords do not match',
-                })}
-              />
-              {errors.confirmPassword && (
-                <p className="mt-1 text-sm text-red-600">{errors.confirmPassword.message}</p>
-              )}
-            </div>
+            <p className="text-xs text-gray-500">Use 8 or more characters with a mix of letters, numbers and symbols</p>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
               <input
                 type="tel"
-                className="block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 bg-gray-50 focus:bg-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors"
                 {...registerField('phone')}
               />
             </div>
@@ -167,14 +174,14 @@ export default function Register() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Date of birth</label>
                 <input
                   type="date"
-                  className="block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                  className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 bg-gray-50 focus:bg-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors"
                   {...registerField('dateOfBirth')}
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
                 <select
-                  className="block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                  className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 bg-gray-50 focus:bg-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors"
                   {...registerField('gender')}
                 >
                   <option value="">Select</option>
@@ -189,7 +196,7 @@ export default function Register() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
               <input
                 type="text"
-                className="block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 bg-gray-50 focus:bg-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors"
                 {...registerField('address')}
               />
             </div>
@@ -199,14 +206,14 @@ export default function Register() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">BMDC Registration Number</label>
                   <input
-                    className="block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                    className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 bg-gray-50 focus:bg-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors"
                     {...registerField('bmdcRegistrationNumber')}
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
                   <select
-                    className="block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                    className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 bg-gray-50 focus:bg-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors"
                     {...registerField('department')}
                   >
                     <option value="">Select department</option>
@@ -220,37 +227,51 @@ export default function Register() {
                   <input
                     type="number"
                     min={0}
-                    className="block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                    className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 bg-gray-50 focus:bg-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors"
                     {...registerField('experience', { valueAsNumber: true })}
                   />
                 </div>
               </>
             )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
-            >
-              {loading ? 'Creating account...' : 'Create account'}
-            </button>
+            <div className="flex items-center justify-between pt-4">
+              <p className="text-sm text-gray-600">
+                Already have an account?{' '}
+                <Link to="/login" className="font-medium text-primary-600 hover:text-primary-500 underline">
+                  Login here
+                </Link>
+              </p>
+              <button
+                type="submit"
+                disabled={loading}
+                className="rounded-lg bg-primary-600 px-8 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 transition-all"
+              >
+                {loading ? 'Processing...' : 'Sign up'}
+              </button>
+            </div>
           </form>
-
-          <p className="mt-6 text-center text-sm text-gray-600">
-            Already have an account?{' '}
-            <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
-              Sign in
-            </Link>
-          </p>
         </div>
-      </div>
-      <div className="hidden lg:block flex-1 bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-600 p-12 flex flex-col justify-center text-white">
-        <h2 className="text-2xl font-bold mb-4">Why join {APP_NAME}?</h2>
-        <ul className="space-y-3 text-indigo-100">
-          <li>• Connect with patients and manage appointments</li>
-          <li>• Build your professional profile and reputation</li>
-          <li>• Secure, compliant healthcare platform</li>
-        </ul>
+
+        {/* Right Side - Illustration */}
+        <div className="hidden md:flex w-full md:w-1/2 bg-primary-50 items-center justify-center p-12 order-1 md:order-2 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary-50 to-primary-100 opacity-50"></div>
+          <div className="relative z-10 flex flex-col items-center text-center">
+
+            <img
+              src={signupIllustration}
+              alt="Healthcare professionals"
+              className="w-full max-w-sm mb-6 object-contain drop-shadow-lg"
+            />
+
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Join {APP_NAME}</h2>
+            <p className="text-lg text-gray-600 max-w-sm mx-auto">
+              Your health journey starts here. Connect with top doctors and manage appointments with ease.
+            </p>
+          </div>
+          {/* Decorative elements */}
+          <div className="absolute top-0 right-0 w-40 h-40 bg-primary-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+          <div className="absolute bottom-0 left-0 w-40 h-40 bg-primary-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+        </div>
       </div>
     </div>
   );

@@ -4,7 +4,6 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
-import { APP_NAME } from '../utils/constants';
 
 interface LoginForm {
   emailOrPhone: string;
@@ -44,25 +43,27 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex">
-      <div className="flex-1 flex items-center justify-center px-4 py-12 bg-gray-50">
-        <div className="w-full max-w-md">
-          <Link to="/" className="text-sm text-indigo-600 hover:text-indigo-500 mb-6 inline-block">
-            ← Back to Home
-          </Link>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Sign in to {APP_NAME}</h1>
-          <p className="text-gray-600 mb-8">Enter your email or phone and password.</p>
+    <div className="min-h-screen flex items-center justify-center bg-white py-12 px-4">
+      <div
+        className="flex flex-col md:flex-row items-stretch bg-white rounded-[30px] border border-[#CDCDCD] overflow-hidden max-w-[1200px] w-full"
+        style={{ boxShadow: "0px 20px 50px #5F6FFF1A" }}
+      >
+        {/* Left Side - Form */}
+        <div className="flex-1 p-10 md:p-14 flex flex-col justify-center">
+          <h1 className="text-gray-600 text-3xl md:text-4xl font-bold mb-4">
+            Sign in to your account
+          </h1>
+          <p className="text-gray-600 text-lg mb-8">
+            Enter your email or phone number
+          </p>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            <div>
-              <label htmlFor="emailOrPhone" className="block text-sm font-medium text-gray-700 mb-1">
-                Email or Phone
-              </label>
+          <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-md">
+            <div className="mb-6">
               <input
-                id="emailOrPhone"
                 type="text"
+                placeholder="Email or Phone"
                 autoComplete="username"
-                className="block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                className="w-full h-[55px] px-4 rounded border border-[#A4A2A2] focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none transition-colors"
                 {...registerField('emailOrPhone', {
                   required: 'Email or phone is required',
                 })}
@@ -72,27 +73,24 @@ export default function Login() {
               )}
             </div>
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                Password
-              </label>
+            <div className="mb-2">
+              <label className="text-gray-600 text-lg mb-2 block ml-1">Password</label>
               <div className="relative">
                 <input
-                  id="password"
+                  placeholder="Password"
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="current-password"
-                  className="block w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                  className="w-full h-[55px] px-4 pr-12 rounded border border-[#A5A2A2] focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none transition-colors"
                   {...registerField('password', {
                     required: 'Password is required',
-                    minLength: { value: 6, message: 'At least 6 characters' },
                   })}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((s) => !s)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                 >
-                  {showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+                  {showPassword ? <EyeSlashIcon className="w-6 h-6" /> : <EyeIcon className="w-6 h-6" />}
                 </button>
               </div>
               {errors.password && (
@@ -100,16 +98,8 @@ export default function Login() {
               )}
             </div>
 
-            <div className="flex items-center justify-between">
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                  {...registerField('remember')}
-                />
-                <span className="ml-2 text-sm text-gray-600">Remember me</span>
-              </label>
-              <Link to="/forgot-password" className="text-sm text-indigo-600 hover:text-indigo-500">
+            <div className="flex justify-end mb-8">
+              <Link to="/forgot-password" className="text-sm text-primary-500 hover:underline">
                 Forgot password?
               </Link>
             </div>
@@ -117,27 +107,42 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
+              className="w-full bg-primary-500 text-white text-xl md:text-2xl font-bold py-4 rounded-[43px] border border-gray-400 hover:bg-primary-600 transition-colors disabled:opacity-70 mb-6"
             >
-              {loading ? 'Signing in...' : 'Sign in'}
+              {loading ? 'Logging in...' : 'Log in'}
             </button>
-          </form>
 
-          <p className="mt-6 text-center text-sm text-gray-600">
-            Don't have an account?{' '}
-            <Link to="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
-              Sign up
+            <div className="flex flex-wrap items-center gap-1.5 text-gray-600 text-sm mb-6">
+              <span>By continuing, you agree to the Terms of use</span>
+              <span>and Privacy Policy.</span>
+            </div>
+
+            {/* Separator */}
+            <div className="flex items-center gap-4 mb-8">
+              <div className="h-[1px] bg-black w-20 opacity-20"></div>
+              <span className="text-gray-500 text-sm">New to our community</span>
+              <div className="h-[1px] bg-black w-20 opacity-20"></div>
+            </div>
+
+            <Link to="/register">
+              <button
+                type="button"
+                className="w-full bg-primary-500 text-white text-xl md:text-2xl font-bold py-4 rounded-[43px] border border-gray-400 hover:bg-primary-600 transition-colors"
+              >
+                Create an Account
+              </button>
             </Link>
-          </p>
+          </form>
         </div>
-      </div>
-      <div className="hidden lg:block flex-1 bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-600 p-12 flex flex-col justify-center text-white">
-        <h2 className="text-2xl font-bold mb-4">Welcome to {APP_NAME}</h2>
-        <ul className="space-y-3 text-indigo-100">
-          <li>• Book appointments with verified doctors</li>
-          <li>• Access medical records and lab reports</li>
-          <li>• Secure and private healthcare platform</li>
-        </ul>
+
+        {/* Right Side - Image */}
+        <div className="hidden md:block w-full md:w-1/2 lg:w-[45%] bg-white p-4 flex items-center justify-center">
+          <img
+            src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/v0o8XbXdnI/1xdg11f0_expires_30_days.png"
+            alt="Login Illustration"
+            className="w-full h-auto object-contain max-h-[650px]"
+          />
+        </div>
       </div>
     </div>
   );

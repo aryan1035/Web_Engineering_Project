@@ -134,7 +134,7 @@ export default function PatientProfile() {
             <button
               type="button"
               onClick={() => setEditingPersonal(true)}
-              className="text-sm text-indigo-600 hover:text-indigo-500"
+              className="text-sm text-primary-600 hover:text-primary-500"
             >
               Edit
             </button>
@@ -151,7 +151,7 @@ export default function PatientProfile() {
                 type="button"
                 onClick={personalForm.handleSubmit((d) => updatePersonalMutation.mutate(d))}
                 disabled={updatePersonalMutation.isPending}
-                className="text-sm font-medium text-indigo-600 hover:text-indigo-500 disabled:opacity-50"
+                className="text-sm font-medium text-primary-600 hover:text-primary-500 disabled:opacity-50"
               >
                 Save
               </button>
@@ -236,7 +236,7 @@ export default function PatientProfile() {
             <button
               type="button"
               onClick={() => setEditingMedical(true)}
-              className="text-sm text-indigo-600 hover:text-indigo-500"
+              className="text-sm text-primary-600 hover:text-primary-500"
             >
               Edit
             </button>
@@ -253,7 +253,7 @@ export default function PatientProfile() {
                 type="button"
                 onClick={medicalForm.handleSubmit((d) => updateMedicalMutation.mutate(d))}
                 disabled={updateMedicalMutation.isPending}
-                className="text-sm font-medium text-indigo-600 hover:text-indigo-500 disabled:opacity-50"
+                className="text-sm font-medium text-primary-600 hover:text-primary-500 disabled:opacity-50"
               >
                 Save
               </button>
