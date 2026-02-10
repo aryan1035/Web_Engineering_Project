@@ -45,11 +45,11 @@ export default function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-white py-12 px-4">
       <div
-        className="flex flex-col md:flex-row items-stretch bg-white rounded-[30px] border border-[#CDCDCD] overflow-hidden max-w-[1200px] w-full"
+        className="flex flex-col md:flex-row items-stretch bg-white rounded-[30px] border border-[#CDCDCD] overflow-hidden max-w-[600px] w-full"
         style={{ boxShadow: "0px 20px 50px #5F6FFF1A" }}
       >
         {/* Left Side - Form */}
-        <div className="flex-1 p-10 md:p-14 flex flex-col justify-center">
+        <div className="flex-1 p-6 md:p-10 flex flex-col justify-center">
           <h1 className="text-gray-600 text-3xl md:text-4xl font-bold mb-4">
             Sign in to your account
           </h1>
@@ -63,7 +63,7 @@ export default function Login() {
                 type="text"
                 placeholder="Email or Phone"
                 autoComplete="username"
-                className="w-full h-[55px] px-4 rounded border border-[#A4A2A2] focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none transition-colors"
+                className="w-full h-[45px] px-4 rounded border border-[#A4A2A2] focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none transition-colors"
                 {...registerField('emailOrPhone', {
                   required: 'Email or phone is required',
                 })}
@@ -80,7 +80,7 @@ export default function Login() {
                   placeholder="Password"
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="current-password"
-                  className="w-full h-[55px] px-4 pr-12 rounded border border-[#A5A2A2] focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none transition-colors"
+                  className="w-full h-[45px] px-4 pr-12 rounded border border-[#A5A2A2] focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none transition-colors"
                   {...registerField('password', {
                     required: 'Password is required',
                   })}
@@ -107,14 +107,14 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-primary-500 text-white text-xl md:text-2xl font-bold py-4 rounded-[43px] border border-gray-400 hover:bg-primary-600 transition-colors disabled:opacity-70 mb-6"
+              className="w-full bg-primary-500 text-white text-xl md:text-xl font-bold py-2 rounded-[43px] border border-gray-400 hover:bg-primary-600 transition-colors disabled:opacity-70 mb-6"
             >
               {loading ? 'Logging in...' : 'Log in'}
             </button>
 
             <div className="flex flex-wrap items-center gap-1.5 text-gray-600 text-sm mb-6">
-              <span>By continuing, you agree to the Terms of use</span>
-              <span>and Privacy Policy.</span>
+              {/* <span>By continuing, you agree to the Terms of use</span>
+              <span>and Privacy Policy.</span> */}
             </div>
 
             {/* Separator */}
@@ -127,7 +127,7 @@ export default function Login() {
             <Link to="/register">
               <button
                 type="button"
-                className="w-full bg-primary-500 text-white text-xl md:text-2xl font-bold py-4 rounded-[43px] border border-gray-400 hover:bg-primary-600 transition-colors"
+                className="w-full bg-primary-500 text-white text-xl md:text-xl font-bold py-2 rounded-[43px] border border-gray-400 hover:bg-primary-600 transition-colors"
               >
                 Create an Account
               </button>
@@ -136,11 +136,11 @@ export default function Login() {
         </div>
 
         {/* Right Side - Image */}
-        <div className="hidden md:block w-full md:w-1/2 lg:w-[45%] bg-white p-4 flex items-center justify-center">
+        <div className="hidden md:flex w-full md:w-1/2 lg:w-[45%] bg-white p-4 items-center justify-center">
           <img
             src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/v0o8XbXdnI/1xdg11f0_expires_30_days.png"
             alt="Login Illustration"
-            className="w-full h-auto object-contain max-h-[650px]"
+            className="w-full h-auto object-contain max-h-[500px]"
           />
         </div>
       </div>

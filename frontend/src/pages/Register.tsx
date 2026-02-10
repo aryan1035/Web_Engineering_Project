@@ -8,7 +8,7 @@ import type { RegisterData } from '../context/AuthContext';
 import { MEDICAL_DEPARTMENTS } from '../utils/departments';
 import { APP_NAME } from '../utils/constants';
 import { validatePassword } from '../utils/passwordValidation';
-import signupIllustration from '../assets/image.png'; // Import the illustration
+import signupIllustration from '../assets/image1.png'; // Import the illustration
 
 type Role = 'patient' | 'doctor';
 
@@ -53,7 +53,7 @@ export default function Register() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-5xl bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row">
         {/* Left Side - Form */}
-        <div className="w-full md:w-1/2 p-8 sm:p-12 order-2 md:order-1">
+        <div className="w-full md:w-1/2 p-4 sm:p-10 order-2 md:order-1">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h1>
             <p className="text-gray-500">Please sign up to book appointment</p>
@@ -253,7 +253,7 @@ export default function Register() {
         </div>
 
         {/* Right Side - Illustration */}
-        <div className="hidden md:flex w-full md:w-1/2 bg-primary-50 items-center justify-center p-12 order-1 md:order-2 relative overflow-hidden">
+        <div className="hidden md:flex w-full md:w-1/2 bg-primary-50 items-center justify-center p-8 order-1 md:order-2 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-primary-50 to-primary-100 opacity-50"></div>
           <div className="relative z-10 flex flex-col items-center text-center">
 
